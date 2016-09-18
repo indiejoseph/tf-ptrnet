@@ -77,7 +77,7 @@ class PointerNetwork(object):
 
     with tf.variable_scope("decoder"):
       outputs, _, _ = pointer_decoder(
-        self.decoder_inputs, final_state, attention_states, cell)
+        self.decoder_inputs, final_state, attention_states, cell, feed_prev=False)
 
     with tf.variable_scope("decoder", reuse=True):
       predictions, _, inps = pointer_decoder(
@@ -146,7 +146,7 @@ class PointerNetwork(object):
         d_x, lr, _ = sess.run([loss, self.learning_rate, train_op], feed_dict=feed_dict)
         train_loss_value = train_loss_value + d_x
 
-        if i % 100 == 0:
+        if i % 100 == 0 and i != 0:
           print 'Step: {0}, lr: {1}'.format(i, lr)
           print "Train: ", train_loss_value / 100
 
@@ -168,7 +168,7 @@ class PointerNetwork(object):
 
         test_loss_value = test_loss_value + sess.run(test_loss, feed_dict=feed_dict)
 
-        if i % 100 == 0:
+        if i % 100 == 0 and i != 0:
           print "Test: ", test_loss_value / 100
           test_loss_value = 0
 
@@ -182,8 +182,8 @@ class PointerNetwork(object):
                   axis=1))
         all_order += FLAGS.batch_size
 
-        if i % 100 == 0:
-          print 'Correct order / All order: %f' % (correct_order / all_order)
+        if i % 100 == 0 and i != 0:
+          print 'Correct order: {0}, All order: {1}'.format(correct_order, all_order)
           correct_order = 0
           all_order = 0
 
